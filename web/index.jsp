@@ -1,3 +1,5 @@
+<%@page import="logica.Producto"%>
+<%@page import="java.util.List"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,6 +143,12 @@
     </form>
 </div>
       
+      <h1>Ver lista de productos</h1>
+    <p>Haz clic en el siguiente botón para ver la lista de productos</p>
+    <form action="MostrarProductosServlet" method="GET">
+    <button type="submit">Mostrar Productos</button>
+</form>
+
 </div>
   
   

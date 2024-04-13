@@ -1,14 +1,16 @@
 package Backend;
 
-import javax.servlet.http.Part;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import logica.Producto;
+import java.io.InputStream;
+
 
 public class BackendHSStudio {
     private final String usuario;
@@ -21,15 +23,13 @@ public class BackendHSStudio {
         this.url = url;
     }
 
-    public void agregarProducto(String nombre, String descripcion, InputStream inputStream, float precio, int talla, String color, String genero) throws IOException, SQLException {
-    Connection conexion = null;
-    PreparedStatement pstmt = null;
-    try {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        conexion = DriverManager.getConnection(url, usuario, password);
+    public void agregarProducto(String nombre, String descripcion, InputStream inputStream, float precio, int talla, String color, String genero) throws IOException, SQLException, ClassNotFoundException {
+          // Agregar producto a la base de datos
+       Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection conexion = DriverManager.getConnection(url, usuario, password);
 
         // Agregar producto a la base de datos
-        pstmt = conexion.prepareStatement("INSERT INTO PRODUCTO (NOMBRE, DESCRIPCION, IMAGEN, PRECIO, TALLA, COLOR, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement pstmt = conexion.prepareStatement("INSERT INTO PRODUCTO (NOMBRE, DESCRIPCION, IMAGEN, PRECIO, TALLA, COLOR, GENERO) VALUES (?, ?, ?, ?, ?, ?, ?)");
         pstmt.setString(1, nombre);
         pstmt.setString(2, descripcion);
         pstmt.setBlob(3, inputStream);
@@ -38,31 +38,36 @@ public class BackendHSStudio {
         pstmt.setString(6, color);
         pstmt.setString(7, genero);
         pstmt.executeUpdate();
-
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(BackendHSStudio.class.getName()).log(Level.SEVERE, "No se pudo cargar el controlador JDBC", ex);
-        throw new SQLException("No se pudo cargar el controlador JDBC", ex);
-    } catch (SQLException ex) {
-        Logger.getLogger(BackendHSStudio.class.getName()).log(Level.SEVERE, "Error al conectar a la base de datos", ex);
-        throw ex;
-    } finally {
-        // Cerrar recursos
-        try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (pstmt != null) {
-                pstmt.close();
-            }
-            if (conexion != null) {
-                conexion.close();
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(BackendHSStudio.class.getName()).log(Level.SEVERE, "Error al cerrar la conexión", ex);
-        
-            
-            
-            }
-        }
     }
+
+    public List<Producto> obtenerProductos() throws SQLException {
+    List<Producto> productos = new ArrayList<>();
+    
+    try (Connection conexion = DriverManager.getConnection(url, usuario, password);
+         PreparedStatement pstmt = conexion.prepareStatement("SELECT * FROM PRODUCTO");
+         ResultSet rs = pstmt.executeQuery()) {
+
+        while (rs.next()) {
+            Producto producto = new Producto();
+            producto.setId(rs.getString("Id_Producto"));
+            producto.setNombre(rs.getString("NOMBRE"));
+            producto.setDescripcion(rs.getString("DESCRIPCION"));
+            producto.setPrecio(rs.getFloat("PRECIO"));
+            producto.setTalla(rs.getInt("TALLA"));
+            producto.setColor(rs.getString("COLOR"));
+            producto.setGenero(rs.getString("GENERO"));
+            // Asegúrate de manejar la obtención de la imagen según cómo la estés almacenando en la base de datos
+            // producto.setImagen(rs.getBlob("IMAGEN")); 
+
+            productos.add(producto);
+        }
+    } catch (SQLException ex) {
+        // Manejo de excepciones
+        ex.printStackTrace(); // Para depuración, imprime el rastreo de la pila en la consola
+        throw ex; // Relanza la excepción para que el servlet pueda manejarla adecuadamente
+    }
+    
+    return productos;
+}
+
 }

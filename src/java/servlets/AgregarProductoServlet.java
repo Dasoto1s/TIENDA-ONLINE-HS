@@ -5,6 +5,7 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -13,13 +14,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import logica.Producto;
 
 @WebServlet(name = "AgregarProductoServlet", urlPatterns = {"/AgregarProductoServlet"})
 @MultipartConfig // Necesario para manejar solicitudes de formulario multipartes (archivos)
 public class AgregarProductoServlet extends HttpServlet {
 
 protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+        throws ServletException, IOException, ClassNotFoundException {
     response.setContentType("text/html;charset=UTF-8");
     try {
         // Obtener los parámetros del formulario
@@ -49,14 +51,37 @@ protected void processRequest(HttpServletRequest request, HttpServletResponse re
 }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    response.setContentType("text/html;charset=UTF-8");
+    try {
+        // Crear instancia de BackendHSStudio
+        BackendHSStudio backend = new BackendHSStudio("root", "", "jdbc:mysql://localhost:3306/abc");
+
+        // Obtener la lista de productos desde la base de datos
+        List<Producto> productos = backend.obtenerProductos();
+
+        // Setear los productos en el atributo de solicitud para enviarlos a la página JSP
+        request.setAttribute("productos", productos);
+
+        // Redirigir a la página JSP para mostrar los productos
+        request.getRequestDispatcher("mostrarProductos.jsp").forward(request, response);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(AgregarProductoServlet.class.getName()).log(Level.SEVERE, null, ex);
+        // Mostrar mensaje de error
+        response.getWriter().println("<h1>Error al obtener los productos</h1>");
+        response.getWriter().println("<p>" + ex.getMessage() + "</p>");
     }
+}
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    try {
         processRequest(request, response);
+    } catch (ClassNotFoundException ex) {
+        Logger.getLogger(AgregarProductoServlet.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }
 }
