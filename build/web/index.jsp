@@ -1,5 +1,3 @@
-<%@page import="logica.Producto"%>
-<%@page import="java.util.List"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,9 +37,7 @@
       <p>Nombre del Administrador</p>
     </div>
     <ul class="opciones">
-   
-    
-       <li><a href="inicioAdmin.html" id="gestionarInventario">Gestionar Inventario</a></li>
+      <li><a href="inicioAdmin.html" id="gestionarInventario">Gestionar Inventario</a></li>
       <li><a href="gestionPerfiles.html" id="gestionarPerfiles">Gestionar Perfiles</a></li>
       <li><a href="gestionarCambiosDevoluciones.html" id="devolucionesCambios">Devoluciones / Cambios</a></li>
       <li><a href="gestionarbannerDestacados.html" id="publicidadDestacados">Banner / Destacados</a></li>
@@ -50,17 +46,15 @@
     </ul>
   </div>
 
-<h1>inventario</h1> 
-  
+  <h1>inventario</h1> 
 
   <div class="container">
-
     <div class="buscadorDos">
         <input type="text" placeholder="Código">
         <input type="text" placeholder="Nombre">
         <button>Buscar</button>
-      </div>
-    <table>
+    </div>
+    <table id="productosTable">
       <thead>
         <tr>
           <th>ID</th>
@@ -73,90 +67,89 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Producto 1</td>
-          <td>Descripción del Producto 1</td>
-          <td>$100</td>
-          <td><img src="imagen_producto1.jpg" alt="Producto 1"></td>
-          <td>Masculino</td>
-          <td>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Producto 2</td>
-          <td>Descripción del Producto 2</td>
-          <td>$150</td>
-          <td><img src="imagen_producto2.jpg" alt="Producto 2"></td>
-          <td>Femenino</td>
-          <td>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Producto 3</td>
-          <td>Descripción del Producto 3</td>
-          <td>$120</td>
-          <td><img src="imagen_producto3.jpg" alt="Producto 3"></td>
-          <td>Masculino</td>
-          <td>
-            <button class="edit-btn">Editar</button>
-            <button class="delete-btn">Eliminar</button>
-          </td>
-          <tr>
-            <td>4</td>
-            <td>Producto 4</td>
-            <td>Descripción del Producto 4</td>
-            <td>$120</td>
-            <td><img src="imagen_producto3.jpg" alt="Producto 3"></td>
-            <td>Masculino</td>
-            <td>
-              <button class="edit-btn">Editar</button>
-              <button class="delete-btn">Eliminar</button>
-            </td>
-
-            
-        </tr>
-   
+        <!-- Aquí se agregarán dinámicamente las filas de productos -->
       </tbody>
     </table>
 
-      
-
-
- <div class="agregar-producto">
-    <button id="btnAgregarProducto">Agregar Nuevo Producto</button>
-  <form action="AgregarProductoServlet" method="POST" enctype="multipart/form-data" id="formularioAgregarProducto" class="hidden">
+    <div class="agregar-producto">
+      <button id="btnAgregarProducto">Agregar Nuevo Producto</button>
+      <form action="AgregarProductoServlet" method="POST" enctype="multipart/form-data" id="formularioAgregarProducto" class="hidden">
         <input type="text" placeholder="Nombre" name="nombre" required>
-            <input type="text" placeholder="Descripción" name="descripcion" required>
-            <input type="file" id="imagenProducto" accept="image/*" name="imagen" required>
-            <input type="number" placeholder="Precio" name="precio" step="0.01" required>
-            <input type="number" placeholder="Talla" name="talla" required>
-            <input type="text" placeholder="Color" name="color" required>
-            <input type="text" placeholder="Género" name="genero" required>
+        <input type="text" placeholder="Descripción" name="descripcion" required>
+        <input type="file" id="imagenProducto" accept="image/*" name="imagen" required>
+        <input type="number" placeholder="Precio" name="precio" step="0.01" required>
+        <input type="number" placeholder="Talla" name="talla" required>
+        <input type="text" placeholder="Color" name="color" required>
+        <input type="text" placeholder="Género" name="genero" required>
         <button type="submit">Guardar</button>
-    </form>
-</div>
-      
-      <h1>Ver lista de productos</h1>
-    <p>Haz clic en el siguiente botón para ver la lista de productos</p>
-    <form action="MostrarProductosServlet" method="GET">
-    <button type="submit">Mostrar Productos</button>
-</form>
+      </form>
+    </div>
+  </div>
 
-</div>
-  
-  
-  
-
-  
-
+  <script>
+    // Cuando el documento esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      // Realizar una solicitud AJAX para obtener los productos del servidor
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'MostrarProductosServlet', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            // Procesar los datos recibidos y actualizar la tabla HTML
+            var productos = JSON.parse(xhr.responseText);
+            var tableBody = document.querySelector('#productosTable tbody');
+            tableBody.innerHTML = ''; // Limpiar el contenido existente
+            productos.forEach(function(producto) {
+              var row = '<tr>' +
+                '<td>' + producto.id + '</td>' +
+                '<td>' + producto.nombre + '</td>' +
+                '<td>' + producto.descripcion + '</td>' +
+                '<td>$' + producto.precio + '</td>' +
+                '<td><img src="' + producto.imagen + '" alt="' + producto.nombre + '"></td>' +
+                '<td>' + producto.genero + '</td>' +
+                '<td>' +
+                '<button class="edit-btn" onclick="editarProducto(' + producto.id + ')">Editar</button>' +
+                '<button class="delete-btn" onclick="eliminarProducto(' + producto.id + ')">Eliminar</button>' +
+                '</td>' +
+                '</tr>';
+              tableBody.innerHTML += row;
+            });
+          } else {
+            console.error('Error al obtener los productos:', xhr.status);
+          }
+        }
+      };
+      xhr.send();
+    });
     
-<script src="JS/gestionInventario.js"></script>
+
+    // Función para eliminar un producto
+    function eliminarProducto(idProducto) {
+      var confirmacion = confirm("¿Estás seguro de que quieres eliminar este producto?");
+      if (confirmacion) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', 'EliminarProductosServlet?id=' + idProducto, true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              // Recargar la página para mostrar los cambios
+              location.reload();
+            } else {
+              console.error('Error al eliminar el producto:', xhr.status);
+            }
+          }
+        };
+        xhr.send();
+      }
+    }
+
+    // Función para redireccionar a la página de edición del producto
+    function editarProducto(idProducto) {
+  // Redirigir a la página de edición del producto con el ID como parámetro
+  window.location.href = 'editarProducto.jsp?id=' + idProducto;
+}
+
+  </script>
+  <script src="JS/gestionInventario.js"></script>
 </body>
 </html>

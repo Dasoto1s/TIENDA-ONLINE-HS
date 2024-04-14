@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,11 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import logica.Producto;
 
 @WebServlet(name = "MostrarProductosServlet", urlPatterns = {"/MostrarProductosServlet"})
@@ -24,7 +27,7 @@ public class MostrarProductosServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        response.setContentType("application/json");
         Connection conexion = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -52,22 +55,34 @@ public class MostrarProductosServlet extends HttpServlet {
                 producto.setGenero(rs.getString("genero"));
                 // Asegúrate de manejar la obtención de la imagen según cómo la estés almacenando en la base de datos
                 // producto.setImagen(rs.getBlob("IMAGEN"));
-                
 
                 productos.add(producto);
             }
 
-            // Verificar si hay productos disponibles
-            if (!productos.isEmpty()) {
-                // Setear los productos en el atributo de solicitud para enviarlos a la página JSP
-                request.setAttribute("productos", productos);
-
-                // Redirigir a la página JSP para mostrar los productos
-                request.getRequestDispatcher("mostrarProductos.jsp").forward(request, response);
-            } else {
-                // Mostrar un mensaje si no hay productos disponibles
-                response.getWriter().println("<h1>No hay productos disponibles</h1>");
+            // Convertir la lista de productos a formato JSON manualmente
+            StringBuilder jsonBuilder = new StringBuilder();
+            jsonBuilder.append("[");
+            for (Producto producto : productos) {
+                jsonBuilder.append("{");
+                jsonBuilder.append("\"id\":").append(producto.getId()).append(",");
+                jsonBuilder.append("\"nombre\":\"").append(producto.getNombre()).append("\",");
+                jsonBuilder.append("\"descripcion\":\"").append(producto.getDescripcion()).append("\",");
+                jsonBuilder.append("\"precio\":").append(producto.getPrecio()).append(",");
+                jsonBuilder.append("\"talla\":").append(producto.getTalla()).append(",");
+                jsonBuilder.append("\"color\":\"").append(producto.getColor()).append("\",");
+                jsonBuilder.append("\"genero\":\"").append(producto.getGenero()).append("\"");
+                jsonBuilder.append("},");
             }
+            // Eliminar la última coma
+            if (!productos.isEmpty()) {
+                jsonBuilder.deleteCharAt(jsonBuilder.length() - 1);
+            }
+            jsonBuilder.append("]");
+
+            // Enviar la respuesta con el JSON generado
+            PrintWriter out = response.getWriter();
+            out.print(jsonBuilder.toString());
+
         } catch (ClassNotFoundException | SQLException ex) {
             ex.printStackTrace();
             // Mostrar mensaje de error
