@@ -20,14 +20,7 @@ public class ObtenerProductoServlet extends HttpServlet {
     private final String password = "";
     private final String url = "jdbc:mysql://localhost:3306/abc";
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Configurar la respuesta HTTP
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        
-        // Obtener el ID del producto de los parámetros de la solicitud
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idProductoStr = request.getParameter("id");
         if (idProductoStr != null) {
             int idProducto = Integer.parseInt(idProductoStr);
@@ -40,32 +33,33 @@ public class ObtenerProductoServlet extends HttpServlet {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 conexion = DriverManager.getConnection(url, usuario, password);
 
-                // Consulta para obtener los detalles del producto
                 pstmt = conexion.prepareStatement("SELECT * FROM PRODUCTO WHERE Id_Producto = ?");
                 pstmt.setInt(1, idProducto);
                 rs = pstmt.executeQuery();
 
                 if (rs.next()) {
-                    // Crear una tabla HTML con los detalles del producto
-                    out.println("<table>");
-                    out.println("<tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th></tr>");
-                    out.println("<tr>");
-                    out.println("<td>" + rs.getInt("Id_Producto") + "</td>");
-                    out.println("<td>" + rs.getString("Nombre") + "</td>");
-                    out.println("<td>" + rs.getString("Descripcion") + "</td>");
-                    out.println("<td>" + rs.getDouble("Precio") + "</td>");
-                    out.println("</tr>");
-                    out.println("</table>");
+                    String nombre = rs.getString("Nombre");
+                    String descripcion = rs.getString("Descripcion");
+                    String imagen = rs.getString("Imagen");
+                    double precio = rs.getDouble("Precio");
+                    String genero = rs.getString("Genero");
+
+                    // Construir una cadena con los detalles del producto
+                    String detallesProducto = nombre + "," + descripcion + "," + imagen + "," + precio + "," + genero;
+
+                    // Escribir los detalles del producto como respuesta
+                    response.setContentType("text/plain");
+                    response.setCharacterEncoding("UTF-8");
+                    PrintWriter out = response.getWriter();
+                    out.print(detallesProducto);
+                    out.flush();
                 } else {
-                    // No se encontró ningún producto con el ID especificado
-                    out.println("No se encontró ningún producto con el ID especificado");
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
             } catch (ClassNotFoundException | SQLException ex) {
                 ex.printStackTrace();
-                // Mostrar mensaje de error
-                out.println("Error al obtener el producto");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } finally {
-                // Cerrar recursos
                 try {
                     if (rs != null) {
                         rs.close();
@@ -81,8 +75,7 @@ public class ObtenerProductoServlet extends HttpServlet {
                 }
             }
         } else {
-            // No se proporcionó un ID válido
-            out.println("ID de producto no válido");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }
