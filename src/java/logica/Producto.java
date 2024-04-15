@@ -4,7 +4,7 @@ public class Producto {
     private String id;
     private String nombre;
     private String descripcion;
-    private String imagen;
+    private byte[] imagenBytes; // Cambio en la representación de la imagen
     private float precio;
     private int talla;
     private String color;
@@ -36,12 +36,12 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public String getImagen() {
-        return imagen;
+    public byte[] getImagenBytes() { // Cambio en el getter para la imagen
+        return imagenBytes;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setImagenBytes(byte[] imagenBytes) { // Cambio en el setter para la imagen
+        this.imagenBytes = imagenBytes;
     }
 
     public float getPrecio() {
@@ -75,5 +75,4 @@ public class Producto {
     public void setGenero(String genero) {
         this.genero = genero;
     }
-
 }

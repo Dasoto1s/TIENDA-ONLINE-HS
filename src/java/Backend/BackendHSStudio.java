@@ -69,7 +69,7 @@ public class BackendHSStudio {
     
     return productos;
 }
-    
+        
     public Producto obtenerProductoPorId(int id) throws SQLException {
     Producto producto = null;
     
@@ -88,7 +88,7 @@ public class BackendHSStudio {
                 producto.setColor(rs.getString("COLOR"));
                 producto.setGenero(rs.getString("GENERO"));
                 // Asegúrate de manejar la obtención de la imagen según cómo la estés almacenando en la base de datos
-                // producto.setImagen(rs.getBlob("IMAGEN")); 
+                producto.setImagenBytes(rs.getBytes("IMAGEN"));
             }
         }
     } catch (SQLException ex) {

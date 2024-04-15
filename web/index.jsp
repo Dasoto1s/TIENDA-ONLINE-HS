@@ -145,10 +145,9 @@
 
     // Función para redireccionar a la página de edición del producto
     function editarProducto(idProducto) {
-  // Redirigir a la página de edición del producto con el ID como parámetro
-  window.location.href = 'editarProducto.jsp?id=' + idProducto;
-}
-
+      // Redirigir a la página de edición del producto con el ID como parámetro
+      window.location.href = 'editarProducto.jsp?id=' + idProducto;
+    }
   </script>
   <script src="JS/gestionInventario.js"></script>
 </body>
