@@ -25,6 +25,7 @@ public class ActualizarProductoServlet extends HttpServlet {
         String imagen = request.getParameter("imagen");
         double precio = Double.parseDouble(request.getParameter("precio"));
         String genero = request.getParameter("genero");
+        int cantidad = Integer.parseInt(request.getParameter("cantidad")); // Nueva cantidad obtenida del formulario
 
         Connection conexion = null;
         PreparedStatement pstmt = null;
@@ -33,13 +34,14 @@ public class ActualizarProductoServlet extends HttpServlet {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conexion = DriverManager.getConnection(url, usuario, password);
 
-            pstmt = conexion.prepareStatement("UPDATE PRODUCTO SET Nombre = ?, Descripcion = ?, Imagen = ?, Precio = ?, Genero = ? WHERE Id_Producto = ?");
+            pstmt = conexion.prepareStatement("UPDATE PRODUCTO SET Nombre = ?, Descripcion = ?, Imagen = ?, Precio = ?, Genero = ?, Cantidad = ? WHERE Id_Producto = ?");
             pstmt.setString(1, nombre);
             pstmt.setString(2, descripcion);
             pstmt.setString(3, imagen);
             pstmt.setDouble(4, precio);
             pstmt.setString(5, genero);
-            pstmt.setInt(6, idProducto);
+            pstmt.setInt(6, cantidad); // Establecer la nueva cantidad
+            pstmt.setInt(7, idProducto);
 
             int filasActualizadas = pstmt.executeUpdate();
 

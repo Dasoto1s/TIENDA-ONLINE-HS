@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Krona+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="CSS/inicioAdmin.css">
   <link rel="stylesheet" href="CSS/gestionInventario.css">
+  
 </head>
 <body>
   <header>
@@ -46,7 +47,7 @@
     </ul>
   </div>
 
-  <h1>inventario</h1> 
+  <h1>Inventario</h1> 
 
   <div class="container">
     <div class="buscadorDos">
@@ -63,6 +64,7 @@
           <th>Precio</th>
           <th>Imagen</th>
           <th>Género</th>
+          <th>Cantidad</th> <!-- Nueva columna para mostrar la cantidad -->
           <th>Acciones</th>
         </tr>
       </thead>
@@ -81,6 +83,7 @@
         <input type="number" placeholder="Talla" name="talla" required>
         <input type="text" placeholder="Color" name="color" required>
         <input type="text" placeholder="Género" name="genero" required>
+        <input type="number" placeholder="Cantidad" name="cantidad" required> <!-- Nueva entrada para la cantidad -->
         <button type="submit">Guardar</button>
       </form>
     </div>
@@ -107,6 +110,7 @@
                 '<td>$' + producto.precio + '</td>' +
                 '<td><img src="' + producto.imagen + '" alt="' + producto.nombre + '"></td>' +
                 '<td>' + producto.genero + '</td>' +
+                '<td>' + producto.cantidad + '</td>' + // Nueva celda para la cantidad
                 '<td>' +
                 '<button class="edit-btn" onclick="editarProducto(' + producto.id + ')">Editar</button>' +
                 '<button class="delete-btn" onclick="eliminarProducto(' + producto.id + ')">Eliminar</button>' +
@@ -148,6 +152,7 @@
       // Redirigir a la página de edición del producto con el ID como parámetro
       window.location.href = 'editarProducto.jsp?id=' + idProducto;
     }
+
   </script>
   <script src="JS/gestionInventario.js"></script>
 </body>

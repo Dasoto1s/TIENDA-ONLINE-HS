@@ -4,11 +4,12 @@ public class Producto {
     private String id;
     private String nombre;
     private String descripcion;
-    private byte[] imagenBytes; // Cambio en la representación de la imagen
+    private String imagen;
     private float precio;
     private int talla;
     private String color;
     private String genero;
+    private int cantidad; // Nuevo atributo cantidad
 
     // Constructor, getters y setters
 
@@ -36,12 +37,12 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public byte[] getImagenBytes() { // Cambio en el getter para la imagen
-        return imagenBytes;
+    public String getImagen() {
+        return imagen;
     }
 
-    public void setImagenBytes(byte[] imagenBytes) { // Cambio en el setter para la imagen
-        this.imagenBytes = imagenBytes;
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public float getPrecio() {
@@ -74,5 +75,13 @@ public class Producto {
 
     public void setGenero(String genero) {
         this.genero = genero;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 }

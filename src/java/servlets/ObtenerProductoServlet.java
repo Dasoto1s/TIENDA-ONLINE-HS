@@ -43,9 +43,10 @@ public class ObtenerProductoServlet extends HttpServlet {
                     String imagen = rs.getString("Imagen");
                     double precio = rs.getDouble("Precio");
                     String genero = rs.getString("Genero");
+                    int cantidad = rs.getInt("Cantidad"); // Nueva columna para la cantidad
 
                     // Construir una cadena con los detalles del producto
-                    String detallesProducto = nombre + "," + descripcion + "," + imagen + "," + precio + "," + genero;
+                    String detallesProducto = nombre + "," + descripcion + "," + imagen + "," + precio + "," + genero + "," + cantidad;
 
                     // Escribir los detalles del producto como respuesta
                     response.setContentType("text/plain");
